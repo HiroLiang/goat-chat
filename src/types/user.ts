@@ -1,10 +1,9 @@
 export interface User {
-    id: string;
-    name: string;
-    email: string;
-    token: string;
-
-    isLoggedIn: boolean;
+    id: number;
+    name?: string;
+    email?: string;
+    token?: string;
+    isLoggedIn?: boolean;
 }
 
 export interface UserLoginRequest {
@@ -12,3 +11,9 @@ export interface UserLoginRequest {
     password: string;
 }
 
+export interface CurrentUserResponse {
+    id: number
+    name: string;
+    email: string;
+    create_at: string;
+}

@@ -64,5 +64,12 @@ http.interceptors.response.use(
 
         return response;
     },
-    error => Promise.reject(error)
+    error => {
+        if (axios.isAxiosError(error) && error.response) {
+            const errorBody = error.response.data as ErrorResponse;
+            return Promise.reject(new Error(errorBody.message));
+        }
+
+        return Promise.reject(error);
+    }
 );

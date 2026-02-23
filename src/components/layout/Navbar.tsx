@@ -1,6 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import * as React from "react";
+import { useUserStore } from "@/stores/userStore.ts";
+import { Button } from "@/components/ui/button.tsx";
+import { http } from "@/api/http.ts";
+import { toast } from "sonner";
 
 interface NavItem {
     name: string;
@@ -9,8 +13,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-    { name: 'Home', path: '/' },
-    { name: 'Login', path: '/login' },
+    { name: 'Chat Room', path: '/chat' },
 ];
 
 interface NavbarProps {
@@ -18,6 +21,24 @@ interface NavbarProps {
 }
 
 export const Navbar = ({ className }: NavbarProps) => {
+    const user = useUserStore((state) => state.currentUser);
+    const setCurrentUser = useUserStore((state) => state.setCurrentUser);
+    const navigate = useNavigate();
+
+    const logout = async () => {
+        await http.post("/api/user/logout");
+
+        setCurrentUser({
+            id: 0,
+            name: undefined,
+            token: undefined,
+            email: undefined,
+            isLoggedIn: false,
+        });
+
+        toast.success("Logout successfully.");
+    }
+
     return (
         <nav className={cn(
             'flex items-center justify-between px-4 ',
@@ -66,10 +87,23 @@ export const Navbar = ({ className }: NavbarProps) => {
 
             {/* user info */}
             <div className="flex items-center gap-3">
-                <div className="flex text-sm justify-between items-center gap-2">
-                    <p className="font-medium">User Name</p>
-                    <p className="text-gray-500 text-xs">在線</p>
-                </div>
+                {user?.isLoggedIn ? (
+                    <div className="flex text-sm justify-between items-center gap-2">
+                        <p className="font-medium">User: {user.name}</p>
+                        <p
+                            className="text-gray-500 text-xs cursor-pointer"
+                            onClick={() => logout()}
+                        >
+                            Logout
+                        </p>
+                    </div>
+                ) : (
+                    <Button size="sm"
+                            className={"bg-primary text-primary-foreground"}
+                            onClick={() => navigate('/login')}>
+                        Login
+                    </Button>
+                )}
             </div>
         </nav>
     )

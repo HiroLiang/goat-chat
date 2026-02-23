@@ -2,9 +2,10 @@ import axios from "axios";
 import { create } from "zustand";
 import { logger } from "@/utils/logger.ts";
 import { AxiosError } from "axios";
+import { env } from "@/config/env.ts";
 
 const healthCheckClient = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
+    baseURL: env.API_BASE_URL,
     timeout: 3000,
 });
 

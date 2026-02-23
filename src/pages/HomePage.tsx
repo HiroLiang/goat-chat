@@ -4,7 +4,7 @@ import { useDeviceStore } from "@/stores/deviceStore.ts";
 import { deviceService } from "@/services/deviceService.ts";
 import { logger } from "@/utils/logger.ts";
 
-export default function HomePage() {
+export const HomePage = () => {
     const deviceState = useDeviceStore();
 
     const printDeviceInfo = () => {
@@ -23,7 +23,6 @@ export default function HomePage() {
     return (
         <>
             <Navbar/>
-            <div>Home</div>
             <div className="flex gap-4">
                 <Button onClick={() => printDeviceInfo()}>get state</Button>
                 <Button onClick={() => initDevice()}>init Device</Button>

@@ -3,21 +3,25 @@ import { User } from "@/types/user.ts";
 
 interface UserState {
     currentUser: User | null;
-    recordedUsers: Map<string, User>;
+    recordedUsers: Map<number, User>;
 
-    setCurrentUser: (user: User) => void;
+    setCurrentUser: (user: User | null) => void;
 }
 
 export const useUserStore = create<UserState>((set) => ({
-    currentUser: null,
+    currentUser: { id: 0 },
     recordedUsers: new Map(),
 
-    setCurrentUser: (user) => {
-        set((state) => {
-            state.currentUser = user;
-            state.recordedUsers.set(user.id, user);
-
-            return state;
-        });
+    setCurrentUser: (user: User | null) => {
+        set((state) => ({
+            currentUser: user ? {
+                ...state.currentUser,
+                ...user,
+            } : null,
+            recordedUsers: user
+                ? new Map(state.recordedUsers).set(user.id, user)
+                : state.recordedUsers,
+        }));
     }
+
 }));

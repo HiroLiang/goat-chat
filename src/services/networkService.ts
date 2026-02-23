@@ -4,26 +4,28 @@ import { toast } from "sonner";
 
 class NetworkService {
     private initialized: boolean = false;
+    private pollingInterval: ReturnType<typeof setInterval> | null = null;
 
     async initialize(): Promise<void> {
-        if (this.initialized) return;
-
         const store: NetworkState = useNetworkStore.getState();
 
-        window.addEventListener('online', () => {
-            logger.info('Browser went online');
-            store.setBrowserOnline(true);
-            toast.success('Network connection restored');
-            store.checkConnection();
-        });
+        if (!this.initialized) {
+            window.addEventListener('online', () => {
+                logger.info('Browser went online');
+                store.setBrowserOnline(true);
+                toast.success('Network connection restored', { duration: 3000 });
+                store.checkConnection();
+            });
 
-        window.addEventListener('offline', () => {
-            logger.info('Browser went offline');
-            store.setBrowserOnline(false);
-            toast.error('Network connection lost');
-        });
+            window.addEventListener('offline', () => {
+                logger.info('Browser went offline');
+                store.setBrowserOnline(false);
+                toast.error('Network connection lost');
+            });
 
-        this.initialized = true;
+            this.startPolling();
+            this.initialized = true;
+        }
 
         await this.checkInitialConnection();
     }
@@ -47,14 +49,31 @@ class NetworkService {
     private async checkInitialConnection(): Promise<void> {
         const store: NetworkState = useNetworkStore.getState();
 
-        logger.info('Checking initial connection');
+        logger.info('Checking initial connection...');
 
         const isOnline = await store.checkConnection();
         if (!isOnline) {
             toast.error('Failed to connect to server', {
                 description: 'Please check your internet connection and try again',
-                duration: 10000
+                duration: 3000
             });
+        } else {
+            logger.info('Connected to server');
+        }
+    }
+
+    startPolling(intervalMs = 30_000) {
+        const store = useNetworkStore.getState();
+        this.stopPolling();
+        this.pollingInterval = setInterval(async () => {
+            await store.checkConnection();
+        }, intervalMs);
+    }
+
+    stopPolling() {
+        if (this.pollingInterval) {
+            clearInterval(this.pollingInterval);
+            this.pollingInterval = null;
         }
     }
 }
