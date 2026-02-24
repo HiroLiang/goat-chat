@@ -1,12 +1,11 @@
-import * as React from "react";
 import { Navbar } from "@/components/layout/Navbar.tsx";
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
-import { http } from "@/api/http.ts";
 import { toast } from "sonner";
-import { useUserStore } from "@/stores/userStore.ts";
 import { useNavigate } from "react-router-dom";
+import { userService } from "@/services/userService.ts";
 
 export const LoginPage = () => {
     const navigate = useNavigate();
@@ -16,25 +15,14 @@ export const LoginPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleSubmit = async (e: React.SubmitEvent) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
 
-        const state = useUserStore.getState();
-
         try {
-            const response = await http.post("/api/user/login", { email, password });
-            const user = await http.get("/api/user/me");
-
-            state.setCurrentUser({
-                id: user.data.id,
-                email: user.data.email,
-                name: user.data.name,
-                isLoggedIn: true,
-            });
-
-            toast.success(response.data.message);
+            const response = await userService.login(email, password);
+            toast.success(response.message ?? "Login successfully");
             navigate("/");
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Login failed';

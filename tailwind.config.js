@@ -20,6 +20,9 @@ module.exports = {
                     hover: 'hsl(var(--navbar-background-hover))',
                     text: 'hsl(var(--navbar-foreground))',
                 },
+                sidebar: {
+                    bg: 'hsl(var(--sidebar-background))',
+                },
                 card: {
                     DEFAULT: 'hsl(var(--card))',
                     foreground: 'hsl(var(--card-foreground))'

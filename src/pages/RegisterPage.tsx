@@ -1,11 +1,11 @@
-import * as React from "react";
 import { Navbar } from "@/components/layout/Navbar.tsx";
 import { useState } from "react";
+import type { FormEvent } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
-import { http } from "@/api/http.ts";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { userService } from "@/services/userService.ts";
 
 export const RegisterPage = () => {
     const navigate = useNavigate();
@@ -16,19 +16,15 @@ export const RegisterPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
 
         try {
-            const response = await http.post("/api/user/register", { email, name, password });
-            if (response.status === 200 || response.status === 201) {
-                toast.success(response.data.message ?? 'Account created successfully');
-                navigate("/login");
-            } else {
-                toast.error(response.data.message);
-            }
+            const response = await userService.register({ email, name, password });
+            toast.success(response.message ?? "Account created successfully");
+            navigate("/login");
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Registration failed');
         } finally {

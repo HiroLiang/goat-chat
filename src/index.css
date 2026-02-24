@@ -8,6 +8,7 @@
         --navbar-background: 120 3.8% 64.1%;
         --navbar-background-hover: 174 12.5% 15.7%;
         --navbar-foreground: 0 0% 98%;
+        --sidebar-background: 120 5% 80%;
         --foreground: 240 10% 3.9%;
         --card: 120 3.8% 64.1%;
         --card-foreground: 174 12.5% 15.7%;
@@ -39,6 +40,7 @@
         --navbar-background: 136 9.4% 77.1%;
         --navbar-background-hover: 201 10.4% 68%;
         --navbar-foreground: 0 0% 98%;
+        --sidebar-background: 240 8% 10%;
         --foreground: 0 0% 98%;
         --card: 240 10% 3.9%;
         --card-foreground: 0 0% 98%;

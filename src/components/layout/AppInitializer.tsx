@@ -5,6 +5,8 @@ import { useDeviceStore } from "@/stores/deviceStore.ts";
 import { Overlay } from "@/components/ui/overlay.tsx";
 import { deviceService } from "@/services/deviceService.ts";
 import { networkService } from "@/services/networkService.ts";
+import { env } from "@/config/env.ts";
+import { userService } from "@/services/userService.ts";
 
 type InitStatus = 'loading' | 'ready' | 'error';
 
@@ -36,6 +38,10 @@ export const AppInitializer = ({ children }: Props) => {
                 message: 'Unable to register device',
             });
             return;
+        }
+
+        if (env.IS_DEV) {
+            await userService.login('jack@gmail.com', 'string');
         }
 
         setStatus("ready");

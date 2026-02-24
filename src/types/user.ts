@@ -11,6 +11,16 @@ export interface UserLoginRequest {
     password: string;
 }
 
+export interface UserRegisterRequest {
+    email: string;
+    name: string;
+    password: string;
+}
+
+export interface AuthMessageResponse {
+    message?: string;
+}
+
 export interface CurrentUserResponse {
     id: number
     name: string;

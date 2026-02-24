@@ -3,8 +3,8 @@ import { cn } from '@/lib/utils';
 import * as React from "react";
 import { useUserStore } from "@/stores/userStore.ts";
 import { Button } from "@/components/ui/button.tsx";
-import { http } from "@/api/http.ts";
 import { toast } from "sonner";
+import { userService } from "@/services/userService.ts";
 
 interface NavItem {
     name: string;
@@ -22,21 +22,16 @@ interface NavbarProps {
 
 export const Navbar = ({ className }: NavbarProps) => {
     const user = useUserStore((state) => state.currentUser);
-    const setCurrentUser = useUserStore((state) => state.setCurrentUser);
     const navigate = useNavigate();
 
     const logout = async () => {
-        await http.post("/api/user/logout");
-
-        setCurrentUser({
-            id: 0,
-            name: undefined,
-            token: undefined,
-            email: undefined,
-            isLoggedIn: false,
-        });
-
-        toast.success("Logout successfully.");
+        try {
+            await userService.logout();
+            toast.success("Logout successfully.");
+        } catch (err) {
+            const message = err instanceof Error ? err.message : "Logout failed";
+            toast.error(message);
+        }
     }
 
     return (
