@@ -10,21 +10,24 @@ interface ChatRoomProps {
 }
 
 const avatarBgClass: Record<ChatGroup['type'], string> = {
-    direct: 'bg-primary text-primary-foreground',
-    group: 'bg-blue-500 text-white',
-    bot: 'bg-amber-500 text-white',
+    DIRECT: 'bg-primary text-primary-foreground',
+    GROUP: 'bg-blue-500 text-white',
+    CHANNEL: 'bg-purple-500 text-white',
+    BOT: 'bg-amber-500 text-white',
 };
 
 const typeLabel: Record<ChatGroup['type'], string> = {
-    direct: 'Direct',
-    group: 'Group',
-    bot: 'Bot',
+    DIRECT: 'Direct',
+    GROUP: 'Group',
+    CHANNEL: 'Channel',
+    BOT: 'Bot',
 };
 
 const typeBadgeClass: Record<ChatGroup['type'], string> = {
-    direct: 'bg-primary/10 text-primary',
-    group: 'bg-blue-500/10 text-blue-600',
-    bot: 'bg-amber-500/10 text-amber-600',
+    DIRECT: 'bg-primary/10 text-primary',
+    GROUP: 'bg-blue-500/10 text-blue-600',
+    CHANNEL: 'bg-purple-500/10 text-purple-600',
+    BOT: 'bg-amber-500/10 text-amber-600',
 };
 
 // Stable color palette for group sender avatars
@@ -45,14 +48,14 @@ const getInitials = (name: string) =>
     name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
 
 function MessageAvatar({ message, chat }: { message: ChatMessage; chat: ChatGroup }) {
-    if (chat.type === 'bot') {
+    if (chat.type === 'BOT') {
         return (
             <div className="h-8 w-8 rounded-full bg-amber-500 text-white flex items-center justify-center flex-shrink-0 self-end">
                 <Bot className="h-4 w-4" />
             </div>
         );
     }
-    const colorClass = chat.type === 'group'
+    const colorClass = chat.type === 'GROUP'
         ? getSenderColor(message.senderId)
         : avatarBgClass[chat.type];
     return (
@@ -66,7 +69,7 @@ function MessageAvatar({ message, chat }: { message: ChatMessage; chat: ChatGrou
 }
 
 function MessageBubble({ message, chat }: { message: ChatMessage; chat: ChatGroup }) {
-    const showSenderName = !message.isMe && chat.type === 'group';
+    const showSenderName = !message.isMe && chat.type === 'GROUP';
 
     return (
         <div className={cn('flex items-end gap-2', message.isMe ? 'flex-row-reverse' : 'flex-row')}>
@@ -77,7 +80,7 @@ function MessageBubble({ message, chat }: { message: ChatMessage; chat: ChatGrou
                     <span className="text-xs text-muted-foreground mb-1 px-1">{message.senderName}</span>
                 )}
                 <div className={cn(
-                    'px-3.5 py-2 text-sm break-words leading-relaxed',
+                    'px-3.5 py-2 text-sm leading-relaxed whitespace-pre-wrap break-words',
                     message.isMe
                         ? 'bg-primary text-primary-foreground rounded-tl-2xl rounded-tr-sm rounded-bl-2xl'
                         : 'bg-muted text-foreground rounded-tr-2xl rounded-tl-sm rounded-br-2xl',
@@ -141,9 +144,9 @@ export function ChatRoom({ chat, messages, onSendMessage }: ChatRoomProps) {
                     'h-9 w-9 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-semibold',
                     avatarBgClass[chat.type],
                 )}>
-                    {chat.type === 'bot'
+                    {chat.type === 'BOT'
                         ? <Bot className="h-5 w-5" />
-                        : chat.type === 'group'
+                        : chat.type === 'GROUP'
                             ? <Users className="h-5 w-5" />
                             : getInitials(chat.name)}
                 </div>
@@ -159,9 +162,10 @@ export function ChatRoom({ chat, messages, onSendMessage }: ChatRoomProps) {
                         </span>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                        {chat.type === 'group' && `${chat.memberCount} members`}
-                        {chat.type === 'direct' && (chat.isOnline ? 'Online' : 'Offline')}
-                        {chat.type === 'bot' && 'AI Assistant'}
+                        {chat.type === 'GROUP' && `${chat.memberCount} members`}
+                        {chat.type === 'DIRECT' && (chat.isOnline ? 'Online' : 'Offline')}
+                        {chat.type === 'BOT' && 'AI Assistant'}
+                        {chat.type === 'CHANNEL' && 'Channel'}
                     </p>
                 </div>
             </div>
@@ -186,13 +190,13 @@ export function ChatRoom({ chat, messages, onSendMessage }: ChatRoomProps) {
                         onKeyDown={handleKeyDown}
                         placeholder={`Message ${chat.name}...`}
                         rows={1}
-                        className="flex-1 bg-transparent resize-none outline-none text-sm text-foreground placeholder:text-muted-foreground min-h-[24px] max-h-[120px] leading-6"
+                        className="flex-1 bg-transparent resize-none outline-none text-sm text-foreground placeholder:text-muted-foreground min-h-[24px] max-h-[120px] leading-6 py-1"
                     />
                     <button
                         onClick={send}
                         disabled={!input.trim()}
                         className={cn(
-                            'rounded-xl p-2 transition-colors flex-shrink-0 mb-0.5',
+                            'h-8 w-8 self-end inline-flex items-center justify-center rounded-xl transition-colors flex-shrink-0',
                             input.trim()
                                 ? 'bg-primary text-primary-foreground hover:opacity-90'
                                 : 'text-muted-foreground cursor-not-allowed opacity-40',
