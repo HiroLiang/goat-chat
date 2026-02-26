@@ -3,13 +3,17 @@ import { Navbar } from '@/components/layout/Navbar.tsx';
 import { ChatSidebar } from '@/components/chat/ChatSidebar.tsx';
 import { ChatRoom } from '@/components/chat/ChatRoom.tsx';
 import { mockChatGroups, mockMessages } from '@/mock/chat.ts';
-import type { ChatMessage } from '@/types/chat';
+import type { ChatGroup, ChatMessage } from '@/types/chat';
 import { MessageSquare } from 'lucide-react';
 
 export const ChatPage = () => {
+    const initialContactSeq = mockChatGroups.filter((chat) => chat.type === 'DIRECT').length + 1;
+
+    const [chats, setChats] = useState<ChatGroup[]>(mockChatGroups);
     const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [messages, setMessages] = useState<Record<string, ChatMessage[]>>(mockMessages);
+    const [nextContactSeq, setNextContactSeq] = useState(initialContactSeq);
 
     const handleSelectChat = (id: string) => {
         setSelectedChatId(id);
@@ -33,16 +37,39 @@ export const ChatPage = () => {
         }));
     };
 
-    const selectedChat = mockChatGroups.find(c => c.id === selectedChatId) ?? null;
+    const handleAddDirectContact = () => {
+        const newId = `contact-${Date.now()}`;
+        const newContact: ChatGroup = {
+            id: newId,
+            type: 'DIRECT',
+            name: `New Contact #${nextContactSeq}`,
+            lastMessage: '',
+            lastMessageTime: 'Now',
+            unreadCount: 0,
+            isOnline: false,
+        };
+
+        setChats((prev) => [newContact, ...prev]);
+        setMessages((prev) => ({
+            ...prev,
+            [newId]: [],
+        }));
+        setSelectedChatId(newId);
+        setSidebarCollapsed(true);
+        setNextContactSeq((prev) => prev + 1);
+    };
+
+    const selectedChat = chats.find(c => c.id === selectedChatId) ?? null;
 
     return (
         <div className="flex flex-col h-screen overflow-hidden">
             <Navbar />
             <div className="flex flex-1 overflow-hidden">
                 <ChatSidebar
-                    chats={mockChatGroups}
+                    chats={chats}
                     selectedChatId={selectedChatId}
                     onSelectChat={handleSelectChat}
+                    onAddDirectContact={handleAddDirectContact}
                     collapsed={sidebarCollapsed}
                     onToggleCollapse={() => setSidebarCollapsed(prev => !prev)}
                 />

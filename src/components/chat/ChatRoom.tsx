@@ -50,8 +50,9 @@ const getInitials = (name: string) =>
 function MessageAvatar({ message, chat }: { message: ChatMessage; chat: ChatGroup }) {
     if (chat.type === 'BOT') {
         return (
-            <div className="h-8 w-8 rounded-full bg-amber-500 text-white flex items-center justify-center flex-shrink-0 self-end">
-                <Bot className="h-4 w-4" />
+            <div
+                className="h-8 w-8 rounded-full bg-amber-500 text-white flex items-center justify-center flex-shrink-0 self-end">
+                <Bot className="h-4 w-4"/>
             </div>
         );
     }
@@ -73,7 +74,7 @@ function MessageBubble({ message, chat }: { message: ChatMessage; chat: ChatGrou
 
     return (
         <div className={cn('flex items-end gap-2', message.isMe ? 'flex-row-reverse' : 'flex-row')}>
-            {!message.isMe && <MessageAvatar message={message} chat={chat} />}
+            {!message.isMe && <MessageAvatar message={message} chat={chat}/>}
 
             <div className={cn('flex flex-col max-w-[65%]', message.isMe ? 'items-end' : 'items-start')}>
                 {showSenderName && (
@@ -91,7 +92,7 @@ function MessageBubble({ message, chat }: { message: ChatMessage; chat: ChatGrou
             </div>
 
             {/* Spacer to mirror avatar width on my side */}
-            {message.isMe && <div className="w-8 flex-shrink-0" />}
+            {message.isMe && <div className="w-8 flex-shrink-0"/>}
         </div>
     );
 }
@@ -101,7 +102,7 @@ export function ChatRoom({ chat, messages, onSendMessage }: ChatRoomProps) {
     const bottomRef = useRef<HTMLDivElement>(null);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    // Jump to bottom instantly when switching chats
+    // Jump to the bottom instantly when switching chats
     useEffect(() => {
         bottomRef.current?.scrollIntoView();
     }, [chat.id]);
@@ -145,9 +146,9 @@ export function ChatRoom({ chat, messages, onSendMessage }: ChatRoomProps) {
                     avatarBgClass[chat.type],
                 )}>
                     {chat.type === 'BOT'
-                        ? <Bot className="h-5 w-5" />
+                        ? <Bot className="h-5 w-5"/>
                         : chat.type === 'GROUP'
-                            ? <Users className="h-5 w-5" />
+                            ? <Users className="h-5 w-5"/>
                             : getInitials(chat.name)}
                 </div>
 
@@ -174,9 +175,9 @@ export function ChatRoom({ chat, messages, onSendMessage }: ChatRoomProps) {
             <div className="flex-1 min-h-0 overflow-y-auto px-4 py-4">
                 <div className="flex flex-col gap-3">
                     {messages.map((msg) => (
-                        <MessageBubble key={msg.id} message={msg} chat={chat} />
+                        <MessageBubble key={msg.id} message={msg} chat={chat}/>
                     ))}
-                    <div ref={bottomRef} />
+                    <div ref={bottomRef}/>
                 </div>
             </div>
 
@@ -202,7 +203,7 @@ export function ChatRoom({ chat, messages, onSendMessage }: ChatRoomProps) {
                                 : 'text-muted-foreground cursor-not-allowed opacity-40',
                         )}
                     >
-                        <Send className="h-4 w-4" />
+                        <Send className="h-4 w-4"/>
                     </button>
                 </div>
                 <p className="text-[11px] text-muted-foreground text-center mt-2">

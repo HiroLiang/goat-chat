@@ -1,11 +1,14 @@
 import { Navbar } from "@/components/layout/Navbar.tsx";
-import { useState } from "react";
-import type { FormEvent } from "react";
+import { type SubmitEvent, useState } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { userService } from "@/services/userService.ts";
+import { chatService } from "@/services/chatService.ts";
+import { wsService } from "@/services/wsService.ts";
+import { useUserStore } from "@/stores/userStore.ts";
+import { env } from "@/config/env.ts";
 
 export const LoginPage = () => {
     const navigate = useNavigate();
@@ -15,7 +18,7 @@ export const LoginPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
@@ -23,6 +26,10 @@ export const LoginPage = () => {
         try {
             const response = await userService.login(email, password);
             toast.success(response.message ?? "Login successfully");
+
+            const token = useUserStore.getState().currentUser?.token;
+            wsService.connect(env.WS_BASE_URL, token ?? '');
+            chatService.initialize();
             navigate("/");
         } catch (err) {
             const message = err instanceof Error ? err.message : 'Login failed';
@@ -112,15 +119,15 @@ export const LoginPage = () => {
                             </form>
 
                             {/* Footer */}
-                            <div className="mt-6 text-center">
+                            <div className="mt-6 text-center flex justify-center items-center gap-2">
                                 <p className="text-muted-foreground text-sm">
                                     Don't nave an account?{' '}
-
-                                    <a href="/register"
-                                       className="text-primary hover:underline font-medium"
-                                    >
-                                        Sign up and get started!
-                                    </a>
+                                </p>
+                                <p
+                                    onClick={() => navigate('/register')}
+                                    className="text-primary text-sm hover:underline font-medium cursor-pointer"
+                                >
+                                    Sign up and get started!
                                 </p>
                             </div>
                         </div>

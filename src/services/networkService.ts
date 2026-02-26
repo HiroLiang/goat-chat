@@ -1,6 +1,7 @@
 import { NetworkState, useNetworkStore } from "@/stores/networkStore.ts";
 import { logger } from "@/utils/logger.ts";
 import { toast } from "sonner";
+import { wsService } from "@/services/wsService.ts";
 
 class NetworkService {
     private initialized: boolean = false;
@@ -15,6 +16,9 @@ class NetworkService {
                 store.setBrowserOnline(true);
                 toast.success('Network connection restored', { duration: 3000 });
                 store.checkConnection();
+
+                logger.info("Reconnecting websocket...");
+                wsService.forceReconnect();
             });
 
             window.addEventListener('offline', () => {

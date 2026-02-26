@@ -1,11 +1,13 @@
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import type { ChatGroup } from '@/types/chat';
-import { Bot, ChevronLeft, ChevronRight, MessageSquare, Users } from 'lucide-react';
+import { Bot, ChevronLeft, ChevronRight, MessageSquare, Plus, Users } from 'lucide-react';
 
 interface ChatSidebarProps {
     chats: ChatGroup[];
     selectedChatId: string | null;
     onSelectChat: (id: string) => void;
+    onAddDirectContact: () => void;
     collapsed: boolean;
     onToggleCollapse: () => void;
 }
@@ -42,7 +44,20 @@ function ChatAvatar({ chat }: { chat: ChatGroup }) {
     );
 }
 
-export function ChatSidebar({ chats, selectedChatId, onSelectChat, collapsed, onToggleCollapse }: ChatSidebarProps) {
+export function ChatSidebar({
+                                chats,
+                                selectedChatId,
+                                onSelectChat,
+                                onAddDirectContact,
+                                collapsed,
+                                onToggleCollapse,
+                            }: ChatSidebarProps) {
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const filteredChats = chats.filter((chat) =>
+        chat.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
+    );
+
     return (
         <div className={cn(
             'flex flex-col h-full border-r border-border bg-sidebar-bg flex-shrink-0',
@@ -71,9 +86,23 @@ export function ChatSidebar({ chats, selectedChatId, onSelectChat, collapsed, on
                 </button>
             </div>
 
+            {!collapsed && (
+                <div className="px-2 py-2 border-b border-border">
+                    <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search chats..."
+                        className="w-full rounded-md border border-input bg-background px-3 py-2
+                        text-sm text-foreground placeholder:text-muted-foreground
+                        outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    />
+                </div>
+            )}
+
             {/* Chat list */}
             <div className="flex-1 min-h-0 overflow-y-auto py-2 px-2">
-                {chats.map((chat) => (
+                {filteredChats.map((chat) => (
                     <button
                         key={chat.id}
                         onClick={() => onSelectChat(chat.id)}
@@ -89,7 +118,9 @@ export function ChatSidebar({ chats, selectedChatId, onSelectChat, collapsed, on
                             <ChatAvatar chat={chat}/>
                             {collapsed && !!chat.unreadCount && chat.unreadCount > 0 && (
                                 <span
-                                    className="absolute -top-1 -right-1 h-4 min-w-4 px-0.5 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                                    className="absolute -top-1 -right-1 h-4 min-w-4 px-0.5 rounded-full bg-destructive
+                                    text-destructive-foreground text-[10px] font-bold flex items-center justify-center"
+                                >
                                     {chat.unreadCount > 9 ? '9+' : chat.unreadCount}
                                 </span>
                             )}
@@ -115,6 +146,29 @@ export function ChatSidebar({ chats, selectedChatId, onSelectChat, collapsed, on
                         )}
                     </button>
                 ))}
+                {!collapsed && filteredChats.length === 0 && (
+                    <p className="px-3 py-6 text-center text-sm text-muted-foreground">No chats found</p>
+                )}
+            </div>
+
+            <div className="border-t border-border p-2">
+                {collapsed ? (
+                    <button
+                        onClick={onAddDirectContact}
+                        className="w-full inline-flex items-center justify-center rounded-md p-2 text-foreground hover:bg-accent transition-colors"
+                        title="New Contact"
+                    >
+                        <Plus className="h-4 w-4"/>
+                    </button>
+                ) : (
+                    <button
+                        onClick={onAddDirectContact}
+                        className="w-full inline-flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-accent transition-colors"
+                    >
+                        <Plus className="h-4 w-4"/>
+                        New Contact
+                    </button>
+                )}
             </div>
         </div>
     );

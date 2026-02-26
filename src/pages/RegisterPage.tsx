@@ -1,6 +1,5 @@
 import { Navbar } from "@/components/layout/Navbar.tsx";
-import { useState } from "react";
-import type { FormEvent } from "react";
+import { type SubmitEvent, useState } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { Input } from "@/components/ui/input.tsx";
 import { toast } from "sonner";
@@ -16,7 +15,7 @@ export const RegisterPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
 
-    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
         setError('');
@@ -121,12 +120,15 @@ export const RegisterPage = () => {
                         </form>
 
                         {/* Footer */}
-                        <div className="mt-6 text-center">
+                        <div className="mt-6 text-center flex justify-center items-center gap-2 flex-shrink-0">
                             <p className="text-muted-foreground text-sm">
                                 Already have an account?{' '}
-                                <a href="/login" className="text-primary hover:underline font-medium">
-                                    Sign in
-                                </a>
+                            </p>
+                            <p
+                                className="text-sm text-primary hover:underline font-medium"
+                                onClick={() => navigate('/login')}
+                            >
+                                Sign up
                             </p>
                         </div>
 
